@@ -1,0 +1,174 @@
+
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+html, body, #map, #container-fluid {
+    height: 100%;
+    width: 100%;
+    padding-bottom: 12px;
+    padding-top: 12px;
+
+}
+
+
+
+.leaflet-tooltip {
+    position: absolute;
+    padding: 0px;
+    background-color: #0000;
+    border: 0px solid #fff;
+    border-radius: 0px;
+    color: #fff;
+    user-select: none;
+    pointer-events: none;
+    box-shadow: 0 0px 0px rgb(0,0,0,0);
+    font-size: 1rem;
+   
+}
+
+.bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+@media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+    }
+}
+
+
+
+#hidden-placeholder {
+    opacity: 0;
+}
+
+
+#tempScale{
+    
+    background-image: linear-gradient(to right, rgba(244,134,255,1) 0%, rgba(244,134,255,1) 4%, rgba(255,64,237,1) 4%, rgba(255,64,237,1) 8%, rgba(218,64,255,1) 8%, rgba(218,64,255,1) 12%, rgba(151,64,255,1) 12%, rgba(151,64,255,1) 16%, rgba(107,12,229,1) 16%, rgba(107,12,229,1) 20%, rgba(33,49,231,1) 20%, rgba(33,49,231,1) 24%, rgba(43,95,217,1) 24%, rgba(43,95,217,1) 28%, rgba(1,131,236,1) 28%, rgba(1,131,236,1) 32%, rgba(69,181,245,1) 32%, rgba(69,181,245,1) 36%, rgba(0,219,221,1) 36%, rgba(0,219,221,1) 40%, rgba(0,255,210,1) 40%, rgba(0,255,210,1) 44%, rgba(39,244,167,1) 44%, rgba(39,244,167,1) 48%, rgba(0,236,147,1) 48%, rgba(0,236,147,1) 52%, rgba(20,236,101,1) 52%, rgba(20,236,101,1) 56%, rgba(41,255,49,1) 56%, rgba(41,255,49,1) 60%, rgba(111,251,56,1) 60%, rgba(111,251,56,1) 64%, rgba(172,255,69,1) 64%, rgba(172,255,69,1) 68%, rgba(203,255,89,1) 68%, rgba(203,255,89,1) 72%, rgba(226,255,91,1) 72%, rgba(226,255,91,1) 76%, rgba(247,254,98,1) 76%, rgba(247,254,98,1) 80%, rgba(250,216,71,1) 80%, rgba(250,216,71,1) 84%, rgba(255,198,0,1) 84%, rgba(255,198,0,1) 88%, rgba(249,165,54,1) 88%, rgba(249,165,54,1) 92%, rgba(250,121,34,1) 92%, rgba(250,121,34,1) 96%, rgba(255,0,0,1) 96%, rgba(255,0,0,1) 100%);
+}
+
+#pressureScale {
+    background-image: linear-gradient(to right, rgb(203,12,53) , rgb(203,12,53) 20%, rgb(150,24,106) 20%, rgb(150,24,106) 40%, rgb(104,35,151) 40%, rgb(104,35,151) 60%, rgb(53,47,202) 60%, rgb(53,47,202) 80%, rgb(0,59,255) 80%, rgb(0,59,255) 100%);
+}
+
+#voltageScale {
+    background-image: linear-gradient(to right, rgb(255,72,72) , rgb(255,72,72) 25%, rgb(209,171,80) 25%, rgb(209,171,80) 50%, rgb(70,163,92) 50%, rgb(70,163,92) 75%, rgb(48,220,110) 75%, rgb(48,220,110) 100%);
+}
+
+#vocScale {
+    background-image: linear-gradient(to right, rgb(51,154,0) , rgb(51,154,0) 16%, rgb(255,238,0) 16%, rgb(255,238,0) 32%, rgb(237,175,52) 32%, rgb(237,175,52) 49%, rgb(255,58,58) 49%, rgb(255,58,58) 67%, rgb(183,0,193) 67%, rgb(183,0,193) 84%, rgb(136,50,50) 84%, rgb(136,50,50) 100%);
+}
+
+#humidityScale {
+     background-image: linear-gradient(to right, rgb(71,131,203) , rgb(71,131,203) 10%, rgb(63,177,220) 10%, rgb(63,177,220) 20%, rgb(55,222,236) 20%, rgb(55,222,236) 30%, rgb(59,204,136) 30%, rgb(59,204,136) 40%, rgb(63,185,35) 40%, rgb(63,185,35) 50%, rgb(142,199,29) 50%, rgb(142,199,29) 60%, rgb(226,228,47) 60%, rgb(226,228,47) 70%, rgb(230,160,17) 70%, rgb(230,160,17) 80%, rgb(238,107,11) 80%, rgb(238,107,11) 90%, rgb(247,54,6) 90%, rgb(255,0,0) 100%);
+}
+
+#particulatesScale {
+    background-image: linear-gradient(to right, rgb(94,255,0) , rgb(94,255,0) 17%, rgb(48,204,0) 17%, rgb(48,204,0) 34%, rgb(144,204,47) 34%, rgb(144,204,47) 50%, rgb(207,181,0) 50%, rgb(207,181,0) 66%, rgb(248,255,0) 66%, rgb(248,255,0) 83%, rgb(255,0,0) 83%, rgb(255,0,0) 100%);
+}
+
+#noxScale {
+    background-image: linear-gradient(to right, rgb(51,154,0) , rgb(51,154,0) 16%, rgb(255,238,0) 16%, rgb(255,238,0) 32%, rgb(237,175,52) 32%, rgb(237,175,52) 49%, rgb(255,58,58) 49%, rgb(255,58,58) 67%, rgb(183,0,193) 67%, rgb(183,0,193) 84%, rgb(136,50,50) 84%, rgb(136,50,50) 100%);
+}
+
+
+
+.voltageScaleVisibility {
+    display: none;
+}
+
+.pressureScaleVisibility{
+    display: none;
+}
+
+.humidityScaleVisibility {
+    display: none;
+}
+
+.particulatesScaleVisibility{
+    display: none;
+}
+
+.noxScaleVisibility {
+    display: none;
+}
+
+.vocScaleVisibility {
+    display: none;
+}
+
+
+
+.cust-button-width {
+    width: 84px !important;
+}
+
+
+@media (min-width: 576px) { 
+    #aboutButton {
+        display: block;
+    }
+    #aboutButtonMobile {
+        display: none;
+    }
+    #filterButton {
+        display: none;
+    }
+
+    .full-height {
+        width: auto;
+        height: 100%;
+        padding-top: 19px;
+    }
+
+
+}
+
+
+
+@media (max-width: 575.98px) { 
+
+    #aboutButton {
+        display: none;
+    }
+
+    #aboutButtonMobile {
+        display: inline-block;
+    }
+
+    #rowFilterbuttons {
+        padding-top: 1px;
+        padding-bottom: 1px;
+    }
+
+    .li {
+        width: 100%;
+        padding-left:0px;
+        padding-right:0px;
+    }
+    .col {
+        width: 100%;
+        padding-left:0px;
+        padding-right:0px;
+        margin-top:0px;
+        justify-content: space-between;
+    }
+
+    .full-height {
+    width: auto;
+    height: 100%;
+    padding-top: 20px;
+}
+
+
+
+}

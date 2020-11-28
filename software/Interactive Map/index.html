@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+    <head>
+
+        <title>JEMA Interactive Map</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" defer integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" defer integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+        <!-- Load Leaflet from CDN -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" defer />
+        <script type="text/javascript" src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+
+        <script type="text/javascript" src='https://api.mapbox.com/mapbox.js/v3.1.0/mapbox.js'></script>
+
+        <!-- CUSTOM JEMA INCLUDE -->
+        <link rel="stylesheet" type="text/css" href="assets/JEMAcss/JEMA.css">
+        <script type="text/javascript" src="assets/JEMAjs/JEMAdata.js" defer></script>
+        <script type="text/javascript" src="assets/JEMAjs/JEMAmodal.js" defer></script>
+
+        <!-- Load D3 from CDN -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+        <script src="https://d3js.org/d3-time-format.v2.min.js"></script>
+        <style>
+            /*Critical CSS to be loaded in main page*/
+
+            /* CSS FOR D3 charts */
+            .axis path,
+            .axis line {
+                fill: none;
+                stroke: black;
+                stroke-width: 1;
+                shape-rendering: crispEdges;
+            }
+        
+            .y.axis line {
+                stroke: lightgray;
+                stroke-width: 1;
+                shape-rendering: auto;
+            }
+        
+            .x.axis line {
+                stroke: lightgray;
+                stroke-width: 1;
+                shape-rendering: auto;
+            }
+        
+            .carousel-control-next-icon,
+            .carousel-control-prev-icon {
+              filter: invert(1);
+              padding: 0;
+              margin: 0;
+            }
+
+            /* CSS FOR chart modal */
+            .flex-temperature {
+                font-size:50px;
+                font-weight:bold;
+                font-family: Arial,Helvetica Neue,Helvetica,sans-serif;
+                line-height:55px
+           }
+
+            .pressure-label {
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .humidity-label {
+                font-size:12px;
+                font-weight:bold;
+            }
+
+
+            .clientID-label {
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .nox-label {
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .vcc-label {
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .voc-label {
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .time-label {
+                font-size:12px;
+                font-weight:bold;  
+            }
+
+            .pressure-txt {
+                font-size:12px;
+            }
+
+            .clientID-txt {
+                font-size:12px;
+            }
+
+            .vcc-txt {
+                font-size:12px;
+            }
+
+            .humidity-txt {
+                font-size:12px;
+            }
+
+            .nox-txt {
+                font-size:12px;
+            }
+
+            .voc-txt {
+                font-size:12px;
+            }
+
+            .time-txt {
+                font-size:12px;
+            }
+
+            .close-data-modal-btn {
+                width:22%;
+            }
+
+            .borderL {
+                border-left:1px solid #4f4f4f;
+            }
+
+            .borderT {
+                border-top:1px solid #4f4f4f;
+            }
+
+            .borderR {
+                border-right:1px solid #4f4f4f;
+            }
+
+            .borderB {
+                border-bottom:1px solid #4f4f4f;
+            }
+
+            .grid-container {
+                display: grid;
+                grid-template-columns: 40px 40px 40px 40px auto;
+            }
+            .grid-item {
+                font-size: 11px;
+                text-align: right;
+            }
+            .grid-item-button {
+                grid-area: 1 / 5 / 4 / 5;
+                align-self: center;
+            }
+        </style>
+    </head>
+
+    <body>
+
+
+        <!-- BEGIN TOP NAVBAR (mobile version) -->
+        <nav class="navbar fixed-top navbar-expand-lg d-block d-sm-none navbar-dark bg-dark pl-2">
+            <img class="navbar-brand p-0 ml-0 pr-2 m-0" src="./assets/JEMA_Logo_white.svg" height="50px" style='float: left;' />
+            <div class="d-flex p-0 m-0 flex-column">
+                <span class="h3 text-white font-weight-bold d-flex" style='margin-bottom: 0 !important; margin-top: 0 !important; padding-bottom: 0 !important; padding-top: 0 !important;' href="#">Interactive Map</span>
+                <span class="small d-flex align-items-baseline" style='color:#979797; margin-top: 0 !important; padding-top: 0 !important; display: inline-block;' href="#">Citizen Science Air Quality Sensor Project</span>
+            </div>
+        </nav>
+        <!-- END TOP NAVBAR -->
+
+
+        <!-- BEGIN TOP NAVBAR (desktop version) -->
+        <nav class="navbar fixed-top navbar-expand-lg d-none d-sm-block navbar-dark bg-dark pb-1">
+            <img class=" navbar-brand p-0 pr-2 m-0" src="./assets/JEMA_Logo_white.svg" height="48px" style='float: left;'/>
+            <div class="p-0 mb-0">
+                <span class="h1 text-white font-weight-bold pt-0 mt-0 mb-0 pb-0" style='line-height:45px; font-size: 40px;' href="#">
+                    Interactive Map
+                </span>
+                <span class="h6 ml-1 mt-0 mb-0 pb-0" style='color:#979797; line-height:45px; font-size: 20px;' href="#">
+                    Citizen Science Air Quality Sensor Project
+                </span>
+            </div>
+        </nav>
+        <!-- END TOP NAVBAR -->
+
+
+        <!-- BEGIN LEAFLETJS MAP CONTAINER -->
+        <div class="container-fluid full-height">
+            <div class="row full-height">
+                <div class="col pt-0 pl-0 pr-0">
+                    <!-- BEGIN LEAFLETJS MAP -->
+                    <div id="map" class="map"></div>
+                    <!-- END LEAFLETJS MAP -->
+                </div>
+            </div>
+        </div>
+        <!-- END LEAFLETJS CONTAINER -->
+
+
+        <script>
+            
+            L.mapbox.accessToken = 'pk.eyJ1IjoibWZkb21haW4iLCJhIjoiY2toeHRhaHQwMG44NzJzdGh4ZHZsY2xuNSJ9.8IxXKXtyoZUHzBQzBPpKSA';
+            var mainmap = L.mapbox.styleLayer('mapbox://styles/mapbox/outdoors-v11');
+            var map = L.map('map', { zoomSnap: 0 })
+            map.addLayer(mainmap);
+                
+            var EsriWorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            })
+
+
+            $(document).ready(function () {
+                $(document).click(function (event) {
+                    var clickover = $(event.target);
+                    var _opened = $(".navbar-collapse").hasClass("show");
+                    if (_opened === true && clickover.hasClass("map")) {
+                        $(".tog").click();
+                    }
+                });
+            });
+
+
+            var displaySatLayer = false;
+            $(document).ready(function () {
+                $('.satellite').click(function (event) {
+                    if(!displaySatLayer){
+                        map.removeLayer(mainmap)
+                        map.addLayer(EsriWorldImagery) 
+                        displaySatLayer = true
+                        $('.satellite').text("Map")
+                    } else {
+                        map.removeLayer(EsriWorldImagery)
+                        map.addLayer(mainmap) 
+                        displaySatLayer = false
+                        $('.satellite').text("Satellite")
+                    }
+                })
+            });
+        
+
+        </script>
+
+
+        <!-- BEGIN DATA MODAL -->
+        <div class="modal" id="modChart" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="d-flex flex-row pb-1 p-0 m-0 bg-dark text-white borderB" style='border-top-left-radius: 0.3rem; border-top-right-radius: 0.3rem;'>
+                        <div><span class="clientID-label p-1">Sensor ID:</span><span class="pt-1 pb-1 clientID-txt flex-clientID"></span></div>
+                    </div>
+                    <div class="borderB d-inline-flex p-0 flex-row">
+                            <div class="flex-temperature pl-1 pr-1 borderR"></div>
+                            <div class="grid-container w-100 mr-auto">
+                                <div class="grid-item borderB pl-1 pr-1"><strong>Baro:</strong></div>
+                                <div class="grid-item borderB borderR flex-pressure pr-1" style='text-align: left;'>2</div>
+                                <div class="grid-item borderB pl-1 pr-1"><strong>NOx:</strong></div>
+                                <div class="grid-item borderB borderR flex-nox pr-1" style='text-align: left;'></div>
+                                <div class="grid-item borderB pl-1 pr-1"><strong>R.H.:</strong></div>
+                                <div class="grid-item borderB borderR flex-humidity pr-1" style='text-align: left;'></div>
+                                <div class="grid-item borderB pl-1 pr-1"><strong>Batt:</strong></div>
+                                <div class="grid-item borderB borderR flex-vcc pr-1" style='text-align: left;'></div>
+                                <div class="grid-item pl-1 pr-1"><strong>VOCs:</strong></div>
+                                <div class="grid-item borderR flex-voc pr-1" style='text-align: left;'></div>
+                                <div class="grid-item pl-1 pr-1"></div>
+                                <div class="grid-item borderR"></div>
+                                <div class="grid-item-button ml-auto mr-2"><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modChart" href="#">Close</button></div>
+                            </div> 
+                        </div>
+                    <div class="modal-body">
+                        <div id="caro" class="carousel slide" data-interval="false" data-ride="carousel">
+                            <div class="carousel-inner"> 
+                                <div class="carousel-item active"> 
+                                  <div id="d3_container_temps" class="svg-container"></div>
+                                </div>
+                                <div class="carousel-item"> 
+                                  <div id="d3_container_humidity" class="svg-container"></div>
+                                </div>
+                                <div class="carousel-item"> 
+                                  <div id="d3_container_pressure" class="svg-container"></div>
+                                </div> 
+                                <div class="carousel-item"> 
+                                  <div id="d3_container_voc" class="svg-container"></div>
+                                </div>
+                                <div class="carousel-item"> 
+                                  <div id="d3_container_nox" class="svg-container"></div>
+                                </div> 
+                                <div class="carousel-item"> 
+                                  <div id="d3_container_vcc" class="svg-container"></div>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-dark p-0">
+                         <div class="btn-group btn-group-sm mx-auto" role="group">
+                            <button type="button" class="btn btn-secondary" data-target="#caro" data-slide-to="0">Temp.</button>
+                            <button type="button" class="btn btn-secondary borderL" data-target="#caro" data-slide-to="1">R.H.</button>
+                            <button type="button" class="btn btn-secondary borderL" data-target="#caro" data-slide-to="2">Baro.</button>
+                            <button type="button" class="btn btn-secondary borderL" data-target="#caro" data-slide-to="3">VOC</button>
+                            <button type="button" class="btn btn-secondary borderL" data-target="#caro" data-slide-to="4">NOx</button>
+                            <button type="button" class="btn btn-secondary borderL" data-target="#caro" data-slide-to="5">Volt.</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END DATA MODAL -->
+
+
+
+        <!-- BEGIN ABOUT MODAL -->
+        <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="AboutModal" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header p-2">
+                <img class="navbar-brand p-0 ml-0 pr-2 m-0" src="./assets/JEMA_Logo_black.svg" height="30px" style='float: left;'/>
+                <h5 class="modal-title" id="exampleModalLongTitle">About</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                    <a class="h6" href="https://github.com/marcusfia/JEMA_CSAQS/wiki/Software-Wiki#Guide" target="_blank">User Guide</a><br>
+                    <a class="h6" href="https://github.com/marcusfia/JEMA_CSAQS/wiki/Hardware-Wiki" target="_blank">Sensor Info</a><br>
+                    Project Info
+                    <br>
+
+                    <br>
+                    <span class="small"><span class="small"><strong>Map Tileset Attribution:</strong> ©<a href="https://www.mapbox.com/about/maps/">Mapbox</a> ©<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></span></strong></span>
+                    <br>
+                    <span class="small"><span class="small"><strong>Satellite Tileset Attribution:</strong> Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community</span></span>
+              </div>
+              <div class="modal-footer p-1">
+                <a class="mr-auto" href="https://github.com/marcusfia/JEMA_CSAQS/" target="_blank"><img src="./assets/github_logo.svg" width="35px" /></a><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END ABOUT MODAL -->
+
+
+
+        <!-- BOTTOM NAVBAR -->
+        <nav class="navbar fixed-bottom navbar-expand-lg navbar-dark bg-dark pl-2 pr-2 mt-0 mb-0 pt-0 pb-0">
+            <div class="d-block d-lg-none mt-0 pt-0 w-100">
+                <div class="d-flex flex-row justify-content-between mt-0 mb-0 pt-0 pb-0">
+                    <a class="tog mt-0 mb-0 pt-0 pb-0" data-toggle="collapse" data-target="#myNavbar" href="#">
+                        <div class="mt-0 mb-0 pt-0 pb-0 pr-0 navbar-brand text-white borderR">
+                            Filters&nbsp;&nbsp;
+                        </div>
+                    </a>
+                    <a class="tog" data-toggle="collapse" data-target="#myNavbar" href="#">
+                        <div class="mt-2 mb-0 pt-0 pb-0 w-100 scale-text font-weight-bold small text-white">
+                            Temperature&nbsp;(&#176;F)
+                        </div>
+                    </a>
+                    <div class="navbar-brand text-white mt-0 mb-0 pt-0 pb-0 pr-0 mr-0 pl-0 borderL" data-toggle="modal" data-target="#aboutModal" href="#">
+                        &nbsp;&nbsp;About
+                    </div>
+                </div>
+              
+            </div>
+
+            <div class="w-100 d-block center pt-0 mt-0">
+                <ul class="navbar-nav ml-0 pt-0 pr-0 w-100">
+                <!-- COLOR SCALES - 1 of these are visible at any given time -->
+                    <!-- temp scale -->
+                    <div class="tempScaleVisibility w-100 mt-0">
+                        <li class="nav-item row justify-content-between mt-0 pl-3 pr-3">
+                            <div class="small mt-0 text-white">-20</div>
+                            <div class="small mt-0 text-white d-none d-sm-block">-10</div>
+                            <div class="small mt-0 text-white">0</div>
+                            <div class="small mt-0 text-white d-none d-sm-block">10</div>
+                            <div class="small mt-0 text-white">20</div>
+                            <div class="small mt-0 text-white d-none d-sm-block">30</div>
+                            <div class="small mt-0 text-white">40</div>
+                            <div class="small mt-0 text-white d-none d-sm-block">50</div>
+                            <div class="small mt-0 text-white">60</div>
+                            <div class="small mt-0 text-white d-none d-sm-block">70</div>
+                            <div class="small mt-0 text-white">80</div>
+                            <div class="small mt-0 text-white d-none d-sm-block">90</div>
+                            <div class="small mt-0 text-white">100</div>
+                        </li>
+                        <li class="nav-item pt-0 pl-0 pr-3" id="tempScale">
+                            <div class="col" id="hidden-placeholder">x</div>
+                        </li>
+                    </div>
+                     <!-- pressure scale -->
+                    <div class="pressureScaleVisibility w-100">
+                        <li class="nav-item row justify-content-between pl-3 pr-3">
+                            <div class="small text-white">948</div>
+                            <div class="small text-white d-none d-sm-block">957</div>
+                            <div class="small text-white">975</div>
+                            <div class="small text-white d-none d-sm-block">996</div>
+                            <div class="small text-white">1014</div>
+                            <div class="small text-white d-none d-sm-block">1032</div>
+                            <div class="small text-white">1050</div>
+                        </li>
+                        <li class="nav-item pl-0 pr-0" id="pressureScale">
+                            <div class="col" id="hidden-placeholder">x</div>
+                        </li>
+                    </div>
+                     <!-- humidity scale -->
+                    <div class="humidityScaleVisibility w-100">
+                        <li class="nav-item row justify-content-between pl-3 pr-3">
+                            <div class="small text-white">0%</div>
+                            <div class="small text-white">20%</div>
+                            <div class="small text-white">40%</div>
+                            <div class="small text-white">60%</div>
+                            <div class="small text-white">80%</div>
+                            <div class="small text-white">100%</div>
+                        </li>
+                        <li class="nav-item pl-0 pr-0" id="humidityScale">
+                            <div class="col" id="hidden-placeholder">x</div>
+                        </li>
+                    </div>
+                    <!-- particulate scale -->
+                    <div class="particulatesScaleVisibility w-100">
+                        <li class="nav-item row justify-content-around pl-3 pr-3">
+                            <div class="text-white text-nowrap small">&nbsp;&nbsp;&nbsp;0-50&nbsp;</div>
+                            <div class="text-white text-nowrap small">&nbsp;&nbsp;&nbsp;51-100&nbsp;</div>
+                            <div class="text-white text-nowrap small">101-150</div>
+                            <div class="text-white text-nowrap small">151-200</div>
+                            <div class="text-white text-nowrap small">201-300&nbsp;&nbsp;&nbsp;</div>                      
+                            <div class="text-white text-nowrap small">400+&nbsp;&nbsp;</div>
+                        </li>
+                        <li class="nav-item pl-0 pr-0" id="particulatesScale">
+                            <div class="col" id="hidden-placeholder">x</div>
+                        </li>
+                    </div>
+                    <!-- nox scale -->
+                    <div class="noxScaleVisibility w-100">
+                        <li class="nav-item row justify-content-around pl-3 pr-2">
+                            <div class="text-white small text-nowrap">&nbsp;&nbsp;0-50</div>
+                            <div class="text-white small text-nowrap">&nbsp;&nbsp;&nbsp;51-100&nbsp;</div>
+                            <div class="text-white small text-nowrap">101-150</div>
+                            <div class="text-white small text-nowrap">&nbsp;151-200</div>
+                            <div class="text-white small text-nowrap">201-300</div>                      
+                            <div class="text-white small text-nowrap">301-500&nbsp;</div>
+                        </li>
+                        <li class="nav-item pl-0 pr-0" id="noxScale">
+                            <div class="col" id="hidden-placeholder">x</div>
+                        </li>
+                    </div>
+                    <!-- voc scale -->
+                    <div class="vocScaleVisibility w-100">
+                        <li class="nav-item row justify-content-around pl-3 pr-2">
+                            <div class="text-white text-nowrap small">&nbsp;&nbsp;0-50</div>
+                            <div class="text-white text-nowrap small">&nbsp;&nbsp;&nbsp;51-100</div>
+                            <div class="text-white text-nowrap small">101-150</div>
+                            <div class="text-white text-nowrap small">&nbsp;151-200</div>
+                            <div class="text-white text-nowrap small">201-300</div>                       
+                            <div class="text-white text-nowrap small">301-500&nbsp;</div>
+                        </li>
+                        <li class="nav-item pl-0 pr-0" id="vocScale">
+                            <div class="col" id="hidden-placeholder">x</div>
+                        </li>
+                    </div>
+                    <!-- voltage scale -->
+                    <div class="voltageScaleVisibility w-100">
+                        <li class="nav-item row justify-content-between pl-3 pr-3">
+                            <div class="text-white small">3.6</div>
+                            <div class="text-white small">4.0</div>
+                            <div class="text-white small">4.4</div>
+                            <div class="text-white small">4.8</div>
+                            <div class="text-white small">5.0</div>
+                        </li>
+                        <li class="nav-item pl-0 pr-0" id="voltageScale">
+                            <div class="col" id="hidden-placeholder">x</div>
+                        </li>
+                    </div>
+                </ul>
+
+            <!-- MOBILE VISIBLE BUTTONS -->
+                <div class="navbar-collapse collapse  mr-0" id="myNavbar">
+                    <div class="w-100 d-block d-xl-none mt-0 pt-0">
+                            <div class=" d-block d-xl-none small text-white text-center mt-2 mb-2 borderT">
+                            </div>
+                    </div>
+                    <ul class="d-block d-lg-none pl-0  mr-0" >
+                         <li class="w-100 nav-item btn-group btn-group-justified " role="group">
+                            <button type="button" class="w-100 navbtn_jema btn btn-secondary" label="Temperature&nbsp;(&#176;F)" name="temps">Temp</button>
+                            <button type="button" class="w-100 navbtn_jema btn btn-secondary borderL" label="Barometric Pressure&nbsp;(mb)"name="pressure">Pressure</button>
+                            <button type="button" class="w-100 navbtn_jema btn btn-secondary borderL" label="Relative Humidity" name="humidity">Humidity</button>
+                        </li>
+                         <li class="w-100 nav-item btn-group btn-group-justified pt-1 mr-0" role="group">
+                            <button type="button" class=" navbtn_jema btn btn-secondary" label="Volatile Organic Compounds" name="voc">VOCs</button>
+                            <button type="button" class=" navbtn_jema btn btn-secondary borderL" label="Air Particulates" name="particulate">Particulates</button>
+                            <button type="button" class=" navbtn_jema btn btn-secondary borderL" label="Nitrogen Oxides" name="nox">NOx</button>
+                            <button type="button" class=" navbtn_jema btn btn-secondary borderL" label="Device Voltage&nbsp;(V)" name="voltage">Voltage</button>
+                        </li>
+                        <div class="w-100 d-block d-lg-none mt-0 pt-0">
+                            <div class=" d-block d-lg-none small text-white text-center mt-2 mb-1 borderT">
+                            </div>
+                        </div>
+                        <div class="w-100 nav-item text-center pt-1 pb-0 mb-0">
+                            <button type="button pb-0 mb-0" class="btn-block btn btn-info satellite">Satellite</button>
+                        </div>
+                    </ul>
+                </div>
+            <!-- END MOBILE VISIBLE BUTTONS -->
+
+
+            <!-- DESKTOP VISIBLE BUTTONS -->
+                <div class="navbar-collapse collapse d-none d-xl-block no-wrap mt-2">
+
+                    <div class="grid w-100 no-wrap">
+        
+                        <div class="row no-wrap">
+
+                            <ul class="navbar-nav pl-3 mb-2 flex-row navbar-collapse collapse d-none d-sm-block no-wrap">
+
+                                <div class="w-100 navbar-collapse collapse order-1 mr-auto" >
+                                    <ul class="navbar-nav mr-auto pr-5">
+                                        <li class="nav-item btn-group" role="group">
+                                            <button type="button" class="navbtn_jema btn btn-secondary" label="Temperature&nbsp;(&#176;F)" name="temps">Temp</button>
+                                            <button type="button" class="navbtn_jema btn btn-secondary borderL" label="Barometric Pressure&nbsp;(mb)" name="pressure">Pressure</button>
+                                            <button type="button" class="navbtn_jema btn btn-secondary borderL" label="Relative Humidity" name="humidity">Humidity</button>
+                                            <button type="button" class="navbtn_jema btn btn-secondary borderL" label="Volatile Organic Compounds" name="voc">VOCs</button>
+                                            <button type="button" class="navbtn_jema btn btn-secondary borderL" label="Air Particulates" name="particulate">Particulates</button>
+                                            <button type="button" class="navbtn_jema btn btn-secondary borderL" label="Nitrogen Oxides" name="nox">NOx</button>
+                                            <button type="button" class="navbtn_jema btn btn-secondary borderL" label="Device Voltage&nbsp;(V)" name="voltage">Voltage</button>
+                                        </li>
+
+                                        <div class="d-block d-lg-block pl-4 mb-0 pb-0 mt-0 pt-0">
+                                            <div class="d-block d-lg-block text-center mb-0 borderL">
+                                                   <div class="pl-4 pb-0 mb-0"><button type="button" class="btn btn-secondary satellite cust-button-width">Satellite</button></div>
+                                            </div>
+                                        </div>
+                                        <div class="d-block d-lg-block pl-4 mt-0 pt-0">
+                                            <div class="d-block d-lg-block text-center mb-0 borderL">
+                                                   <span class="scale-text pl-4 pb-0 navbar-brand text-white">Temperature&nbsp;(&#176;F)</span>
+                                            </div>
+                                        </div>
+                                    </ul>
+                                </div>
+
+                                <div class="navbar-collapse collapse w-100 order-3">
+                                    <ul class="navbar-nav ml-auto">
+                                        <li class="nav-item">
+                                            <div class="d-flex flex-row no-wrap">
+                                                <a class="text-whit navbar-brand" data-toggle="modal" data-target="#aboutModal" href="#">About</a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- END DESKTOP VISIBLE BUTTONS -->
+
+            </div>
+        </nav>
+
+     
+    </body>
+</html>
