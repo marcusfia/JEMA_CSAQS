@@ -72,6 +72,11 @@ fetch("https://hogcaszzdb.execute-api.us-west-2.amazonaws.com/prod/mapdata", req
             }, mapLayers);
         }
 
+
+
+
+
+        // create and store nox markers
         mapLayers["nox"] = L.geoJSON(response, {
 
             pointToLayer: function( feature, latlng ) {
@@ -117,6 +122,9 @@ fetch("https://hogcaszzdb.execute-api.us-west-2.amazonaws.com/prod/mapdata", req
             }, onEachFeature: onEachFeature
 
         })
+
+
+
 
 
         // create and store voc markers
@@ -168,6 +176,9 @@ fetch("https://hogcaszzdb.execute-api.us-west-2.amazonaws.com/prod/mapdata", req
             }, onEachFeature: onEachFeature
 
         })
+
+
+
 
 
         // create and store humidity markers
@@ -224,6 +235,9 @@ fetch("https://hogcaszzdb.execute-api.us-west-2.amazonaws.com/prod/mapdata", req
         })
 
 
+
+
+
         // create and store pressure markers
         mapLayers["pressure"] = L.geoJSON(response, {
 
@@ -267,6 +281,9 @@ fetch("https://hogcaszzdb.execute-api.us-west-2.amazonaws.com/prod/mapdata", req
             }, onEachFeature: onEachFeature
 
         })
+
+
+
 
 
         // create and store particulate markers
@@ -314,6 +331,9 @@ fetch("https://hogcaszzdb.execute-api.us-west-2.amazonaws.com/prod/mapdata", req
         })
 
 
+
+
+
         // create and store voltage markers
         mapLayers["voltage"] = L.geoJSON(response, {
 
@@ -355,6 +375,11 @@ fetch("https://hogcaszzdb.execute-api.us-west-2.amazonaws.com/prod/mapdata", req
             }, onEachFeature: onEachFeature
 
         })
+
+
+
+
+
 
         // create and store temps markers
         mapLayers["temps"] = L.geoJSON(response, {
@@ -446,6 +471,11 @@ fetch("https://hogcaszzdb.execute-api.us-west-2.amazonaws.com/prod/mapdata", req
             }, onEachFeature: onEachFeature
 
         })
+
+
+
+
+
     map.fitBounds(mapLayers["temps"].getBounds().pad(0.5));
     return addFirstLayer(mapLayers);
 
