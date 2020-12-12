@@ -575,7 +575,7 @@ function onEachFeature(feature, layer) {
         });
     } else {
         // display 'OFFLINE' in popup if device if old data detected
-        layer.bindPopup('<strong>client id:</strong> '+ feature.properties.clientI + '<br><strong>OFFLINE</strong>');
+        layer.bindPopup('<strong>client id:</strong> '+ feature.properties.clientID + '<br><strong>OFFLINE</strong>');
     }
 
     // format into 12 hour AM/PM time
