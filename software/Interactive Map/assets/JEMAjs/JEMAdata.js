@@ -62,7 +62,7 @@ function createIcon(bg_color, opacity, textAlign, text_margin_top, font_color, f
 
 
 // GET request to retreive latest data and populate markers
-fetch("https://hogcaszzdb.execute-api.us-west-2.amazonaws.com/prod/mapdata", requestOptions)
+fetch("*** URL FOR QUERY REQUESTS HERE *** ", requestOptions)
     .then(response => response.json())
     .then(function(response) { 
 
