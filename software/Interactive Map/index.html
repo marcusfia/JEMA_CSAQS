@@ -1,5 +1,8 @@
 <!doctype html>
 <html lang="en">
+
+
+
     <head>
 
         <title>JEMA Interactive Map</title>
@@ -15,19 +18,25 @@
         <!-- Load Leaflet from CDN -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" defer />
         <script type="text/javascript" src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
-
         <script type="text/javascript" src='https://api.mapbox.com/mapbox.js/v3.1.0/mapbox.js'></script>
 
         <!-- CUSTOM JEMA INCLUDE -->
-        <link rel="stylesheet" type="text/css" href="assets/JEMAcss/JEMA.css">
+        <link rel="stylesheet" type="text/css" href="assets/JEMAcss/JEMA.css" defer>
         <script type="text/javascript" src="assets/JEMAjs/JEMAdata.js" defer></script>
         <script type="text/javascript" src="assets/JEMAjs/JEMAmodal.js" defer></script>
 
         <!-- Load D3 from CDN -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
-        <script src="https://d3js.org/d3-time-format.v2.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js" defer></script>
+
+
+
+
+
+
+        <!--Critical CSS to be loaded in main page-->
         <style>
-            /*Critical CSS to be loaded in main page*/
+      
+
 
             /* CSS FOR D3 charts */
             .axis path,
@@ -57,6 +66,8 @@
               margin: 0;
             }
 
+
+
             /* CSS FOR chart modal */
             .flex-temperature {
                 font-size:50px;
@@ -65,67 +76,12 @@
                 line-height:55px
            }
 
-            .pressure-label {
+            .modal-cust-label {
                 font-size:12px;
                 font-weight:bold;
             }
 
-            .humidity-label {
-                font-size:12px;
-                font-weight:bold;
-            }
-
-
-            .clientID-label {
-                font-size:12px;
-                font-weight:bold;
-            }
-
-            .nox-label {
-                font-size:12px;
-                font-weight:bold;
-            }
-
-            .vcc-label {
-                font-size:12px;
-                font-weight:bold;
-            }
-
-            .voc-label {
-                font-size:12px;
-                font-weight:bold;
-            }
-
-            .time-label {
-                font-size:12px;
-                font-weight:bold;  
-            }
-
-            .pressure-txt {
-                font-size:12px;
-            }
-
-            .clientID-txt {
-                font-size:12px;
-            }
-
-            .vcc-txt {
-                font-size:12px;
-            }
-
-            .humidity-txt {
-                font-size:12px;
-            }
-
-            .nox-txt {
-                font-size:12px;
-            }
-
-            .voc-txt {
-                font-size:12px;
-            }
-
-            .time-txt {
+            .modal-cust-txt {
                 font-size:12px;
             }
 
@@ -155,18 +111,29 @@
             }
             .grid-item {
                 font-size: 11px;
-                text-align: right;
             }
             .grid-item-button {
                 grid-area: 1 / 5 / 4 / 5;
                 align-self: center;
             }
+
+            .svgHover:hover circle {
+                stroke:white;
+                stroke-width:2px;
+            }
         </style>
+
+
     </head>
 
+
+
+
+
+
+
+
     <body>
-
-
         <!-- BEGIN TOP NAVBAR (mobile version) -->
         <nav class="navbar fixed-top navbar-expand-lg d-block d-sm-none navbar-dark bg-dark pl-2">
             <img class="navbar-brand p-0 ml-0 pr-2 m-0" src="./assets/JEMA_Logo_white.svg" height="50px" style='float: left;' />
@@ -176,6 +143,10 @@
             </div>
         </nav>
         <!-- END TOP NAVBAR -->
+
+
+
+
 
 
         <!-- BEGIN TOP NAVBAR (desktop version) -->
@@ -193,6 +164,13 @@
         <!-- END TOP NAVBAR -->
 
 
+
+
+
+
+
+
+
         <!-- BEGIN LEAFLETJS MAP CONTAINER -->
         <div class="container-fluid full-height">
             <div class="row full-height">
@@ -206,18 +184,29 @@
         <!-- END LEAFLETJS CONTAINER -->
 
 
+
+
+
+
+
+
+
+
+
+
         <script>
-            
+   			// Leaflet Map
             L.mapbox.accessToken = 'pk.eyJ1IjoibWZkb21haW4iLCJhIjoiY2toeHRhaHQwMG44NzJzdGh4ZHZsY2xuNSJ9.8IxXKXtyoZUHzBQzBPpKSA';
             var mainmap = L.mapbox.styleLayer('mapbox://styles/mapbox/outdoors-v11');
-            var map = L.map('map', { zoomSnap: 0 })
+            var map = L.map('map', {  center: { lat: 41.65, lng: -91.53 }, zoomSnap: 0, zoom: 10 })
             map.addLayer(mainmap);
-                
+               
+            // Load Terrain map in background
             var EsriWorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                 attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
             })
 
-
+            // For minimizing menu in mobile mode by clicking anywhere on map
             $(document).ready(function () {
                 $(document).click(function (event) {
                     var clickover = $(event.target);
@@ -228,7 +217,7 @@
                 });
             });
 
-
+            // For Toggling the terrain / map base layer
             var displaySatLayer = false;
             $(document).ready(function () {
                 $('.satellite').click(function (event) {
@@ -245,34 +234,39 @@
                     }
                 })
             });
-        
 
         </script>
+
+
+
+
+
+
 
 
         <!-- BEGIN DATA MODAL -->
         <div class="modal" id="modChart" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
-                    <div class="d-flex flex-row pb-1 p-0 m-0 bg-dark text-white borderB" style='border-top-left-radius: 0.3rem; border-top-right-radius: 0.3rem;'>
-                        <div><span class="clientID-label p-1">Sensor ID:</span><span class="pt-1 pb-1 clientID-txt flex-clientID"></span></div>
+                    <div class="d-flex justify-content-between flex-row pb-1 p-0 m-0 bg-dark text-white borderB" style='border-top-left-radius: 0.3rem; border-top-right-radius: 0.3rem;'>
+                        <div><span class="modal-cust-label p-1">Sensor ID:</span><span class="p-1 modal-cust-txt flex-clientID"></span></div> <div><span class="ml-auto modal-cust-label p-1">Last Reading:</span><span class="pt-1 pr-1 pb-1 modal-cust-txt flex-time"></span></div>
                     </div>
                     <div class="borderB d-inline-flex p-0 flex-row">
                             <div class="flex-temperature pl-1 pr-1 borderR"></div>
                             <div class="grid-container w-100 mr-auto">
                                 <div class="grid-item borderB pl-1 pr-1"><strong>Baro:</strong></div>
-                                <div class="grid-item borderB borderR flex-pressure pr-1" style='text-align: left;'>2</div>
-                                <div class="grid-item borderB pl-1 pr-1"><strong>NOx:</strong></div>
-                                <div class="grid-item borderB borderR flex-nox pr-1" style='text-align: left;'></div>
-                                <div class="grid-item borderB pl-1 pr-1"><strong>R.H.:</strong></div>
-                                <div class="grid-item borderB borderR flex-humidity pr-1" style='text-align: left;'></div>
-                                <div class="grid-item borderB pl-1 pr-1"><strong>Batt:</strong></div>
-                                <div class="grid-item borderB borderR flex-vcc pr-1" style='text-align: left;'></div>
-                                <div class="grid-item pl-1 pr-1"><strong>VOCs:</strong></div>
-                                <div class="grid-item borderR flex-voc pr-1" style='text-align: left;'></div>
-                                <div class="grid-item pl-1 pr-1"></div>
-                                <div class="grid-item borderR"></div>
-                                <div class="grid-item-button ml-auto mr-2"><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modChart" href="#">Close</button></div>
+                                <div class="grid-item borderB borderR flex-pressure pr-1" style='width:47px;'></div>
+                                <div class="grid-item borderB pl-2 pr-2"><strong>NOx:</strong></div>
+                                <div class="grid-item borderB borderR flex-nox pr-1" style='width:47px'></div>
+                                <div class="grid-item borderB pr-1 pl-1 "><strong>R.H.:</strong></div>
+                                <div class="grid-item borderB borderR flex-humidity pr-1" style=' width:47px;'></div>
+                                <div class="grid-item borderB pl-2 pr-1"><strong>Batt:</strong></div>
+                                <div class="grid-item borderB borderR flex-vcc pr-1" style=' width:47px;'></div>
+                                <div class="grid-item pr-1 pl-1 "><strong>VOCs:</strong></div>
+                                <div class="grid-item borderR flex-voc pr-1" style='width:47px;'></div>
+                                <div class="grid-item pr-1"></div>
+                                <div class="grid-item borderR" style='width:47px;'></div>
+                                <div class="grid-item-button mr-2"><button type="button" class="btn btn-secondary"  style="float:right" data-toggle="modal" data-target="#modChart" href="#">Close</button></div>
                             </div> 
                         </div>
                     <div class="modal-body">
@@ -296,17 +290,28 @@
                                 <div class="carousel-item"> 
                                   <div id="d3_container_vcc" class="svg-container"></div>
                                 </div> 
+                                <div class="carousel-item"> 
+                                  <div id="d3_container_PM" class="svg-container"></div>
+                                </div> 
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer bg-dark p-0">
                          <div class="btn-group btn-group-sm mx-auto" role="group">
-                            <button type="button" class="btn btn-secondary" data-target="#caro" data-slide-to="0">Temp.</button>
-                            <button type="button" class="btn btn-secondary borderL" data-target="#caro" data-slide-to="1">R.H.</button>
-                            <button type="button" class="btn btn-secondary borderL" data-target="#caro" data-slide-to="2">Baro.</button>
-                            <button type="button" class="btn btn-secondary borderL" data-target="#caro" data-slide-to="3">VOC</button>
-                            <button type="button" class="btn btn-secondary borderL" data-target="#caro" data-slide-to="4">NOx</button>
-                            <button type="button" class="btn btn-secondary borderL" data-target="#caro" data-slide-to="5">Volt.</button>
+                            <!-- Temperature Glyph -->
+                            <a href="#" style="text-decoration:none" data-target="#caro" data-slide-to="0" class="svgHover mr-3"><svg width="30" shape-rendering="optimizeQuality" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><g id="fb30524a-749a-4a7e-91db-1157707f2a66" data-name="Layer 2"><g id="bc4b7495-b5e8-406f-8fb1-edacaaad87e1" data-name="Layer 1"><circle cx="28" cy="28" r="27" fill="#29abe2"/><text x="25%" y="0" text-anchor="middle" transform="translate(13.74 41.89)" font-size="40.88" fill="#fff" font-family="ArialNarrow-Bold, Arial" font-weight="700">T</text></g></g></svg></a>
+                            <!-- Humidity Glyph -->
+                            <a href="#" style="text-decoration:none" data-target="#caro" data-slide-to="1" class="svgHover mr-3"><svg width="30" shape-rendering="optimizeQuality" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><g id="fb30524a-749a-4a7e-91db-1157707f2a66" data-name="Layer 2"><g id="bc4b7495-b5e8-406f-8fb1-edacaaad87e1" data-name="Layer 1"><circle cx="28" cy="28" r="27" fill="#29abe2"/><text x="25%" y="0" text-anchor="middle" transform="translate(13.74 41.89)" font-size="40.88" fill="#fff" font-family="ArialNarrow-Bold, Arial" font-weight="700">H</text></g></g></svg></a>
+                            <!-- Barometric Pressure Glyph -->    
+                            <a href="#" style="text-decoration:none" data-target="#caro" data-slide-to="2" class="svgHover mr-3"><svg width="30" shape-rendering="optimizeQuality" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><g id="fb30524a-749a-4a7e-91db-1157707f2a66" data-name="Layer 2"><g id="bc4b7495-b5e8-406f-8fb1-edacaaad87e1" data-name="Layer 1"><circle cx="28" cy="28" r="27" fill="#29abe2"/><text x="25%" y="0" text-anchor="middle" transform="translate(13.74 41.89)" font-size="40.88" fill="#fff" font-family="ArialNarrow-Bold, Arial" font-weight="700">P</text></g></g></svg></a>
+                            <!-- VOC Glyph --> 
+                            <a href="#" style="text-decoration:none" data-target="#caro" data-slide-to="3" class="svgHover mr-3"><svg width="30" shape-rendering="optimizeQuality" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><g id="fb30524a-749a-4a7e-91db-1157707f2a66" data-name="Layer 2"><g id="bc4b7495-b5e8-406f-8fb1-edacaaad87e1" data-name="Layer 1"><circle cx="28" cy="28" r="27" fill="#29abe2"/><text x="25%" y="0" text-anchor="middle" transform="translate(13.74 41.89)" font-size="40.88" fill="#fff" font-family="ArialNarrow-Bold, Arial" font-weight="700">V</text></g></g></svg></a>
+                            <!-- NOx Glyph --> 
+                            <a href="#" style="text-decoration:none" data-target="#caro" data-slide-to="4" class="svgHover mr-3"><svg width="30" shape-rendering="optimizeQuality" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><g id="abff615d-27ef-4f6b-8351-5748265c8ade" data-name="Layer 2"><g id="f813b053-73d4-490f-9a7a-80b30d8ce2be" data-name="Layer 1"><circle cx="28" cy="28" r="27" fill="#29abe2"/><text x="25%" y="0" text-anchor="middle" transform="translate(13.38 41.61)" font-size="40.88" fill="#fff" font-family="ArialNarrow-Bold, Arial" font-weight="700">N</text></g></g></svg></a>
+                            <!-- Voltage Glyph --> 
+                            <a href="#" style="text-decoration:none" data-target="#caro" data-slide-to="5" class="svgHover mr-3"><svg width="30" shape-rendering="optimizeQuality" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><g id="fb30524a-749a-4a7e-91db-1157707f2a66" data-name="Layer 2"><g id="bc4b7495-b5e8-406f-8fb1-edacaaad87e1" data-name="Layer 1"><circle cx="28" cy="28" r="27" fill="#29abe2"/><text x="25%" y="0" text-anchor="middle" transform="translate(13.74 41.89)" font-size="40.88" fill="#fff" font-family="ArialNarrow-Bold, Arial" font-weight="700">B</text></g></g></svg></a>
+                            <!-- MAX30105 Glyph --> 
+                            <a href="#" style="text-decoration:none" data-target="#caro" data-slide-to="6" class="svgHover mr-3"><svg width="30" shape-rendering="optimizeQuality" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><g id="fb30524a-749a-4a7e-91db-1157707f2a66" data-name="Layer 2"><g id="bc4b7495-b5e8-406f-8fb1-edacaaad87e1" data-name="Layer 1"><circle cx="28" cy="28" r="27" fill="#29abe2"/><text x="25%" y="0" text-anchor="middle" transform="translate(13.74 41.89)" font-size="40.88" fill="#fff" font-family="ArialNarrow-Bold, Arial" font-weight="700">M</text></g></g></svg></a>
                         </div>
                     </div>
                 </div>
@@ -316,25 +321,34 @@
 
 
 
+
+
+
+
+
+
+
+
+
         <!-- BEGIN ABOUT MODAL -->
         <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="AboutModal" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
               <div class="modal-header p-2">
                 <img class="navbar-brand p-0 ml-0 pr-2 m-0" src="./assets/JEMA_Logo_black.svg" height="30px" style='float: left;'/>
-                <h5 class="modal-title" id="exampleModalLongTitle">About</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">Help</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
-                    <a class="h6" href="https://github.com/marcusfia/JEMA_CSAQS/wiki/Software-Wiki#Guide" target="_blank">User Guide</a><br>
+                    <a class="h6" href="https://github.com/marcusfia/JEMA_CSAQS/wiki/User-Guide:-Interactive-Map" target="_blank">User Guide</a><br>
                     <a class="h6" href="https://github.com/marcusfia/JEMA_CSAQS/wiki/Hardware-Wiki" target="_blank">Sensor Info</a><br>
-                    Project Info
+                    <a class="h6" href="https://github.com/marcusfia/JEMA_CSAQS" target="_blank">Project Info</a>
                     <br>
 
                     <br>
-                    <span class="small"><span class="small"><strong>Map Tileset Attribution:</strong> ©<a href="https://www.mapbox.com/about/maps/">Mapbox</a> ©<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></span></strong></span>
+                    <span class="small"><span class="small"><strong>Map Tileset Attribution:</strong> ©<a href="https://www.mapbox.com/about/maps/" target="_blank">Mapbox</a> ©<a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></span></strong></span>
                     <br>
                     <span class="small"><span class="small"><strong>Satellite Tileset Attribution:</strong> Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community</span></span>
               </div>
@@ -348,13 +362,22 @@
 
 
 
+
+
+
+
+
+
+
+
+
         <!-- BOTTOM NAVBAR -->
         <nav class="navbar fixed-bottom navbar-expand-lg navbar-dark bg-dark pl-2 pr-2 mt-0 mb-0 pt-0 pb-0">
             <div class="d-block d-lg-none mt-0 pt-0 w-100">
                 <div class="d-flex flex-row justify-content-between mt-0 mb-0 pt-0 pb-0">
                     <a class="tog mt-0 mb-0 pt-0 pb-0" data-toggle="collapse" data-target="#myNavbar" href="#">
                         <div class="mt-0 mb-0 pt-0 pb-0 pr-0 navbar-brand text-white borderR">
-                            Filters&nbsp;&nbsp;
+                            Menu&nbsp;&nbsp;
                         </div>
                     </a>
                     <a class="tog" data-toggle="collapse" data-target="#myNavbar" href="#">
@@ -363,7 +386,7 @@
                         </div>
                     </a>
                     <div class="navbar-brand text-white mt-0 mb-0 pt-0 pb-0 pr-0 mr-0 pl-0 borderL" data-toggle="modal" data-target="#aboutModal" href="#">
-                        &nbsp;&nbsp;About
+                        &nbsp;&nbsp;Help
                     </div>
                 </div>
               
@@ -509,6 +532,11 @@
             <!-- END MOBILE VISIBLE BUTTONS -->
 
 
+
+
+
+
+
             <!-- DESKTOP VISIBLE BUTTONS -->
                 <div class="navbar-collapse collapse d-none d-xl-block no-wrap mt-2">
 
@@ -547,7 +575,7 @@
                                     <ul class="navbar-nav ml-auto">
                                         <li class="nav-item">
                                             <div class="d-flex flex-row no-wrap">
-                                                <a class="text-whit navbar-brand" data-toggle="modal" data-target="#aboutModal" href="#">About</a>
+                                                <a class="text-whit navbar-brand" data-toggle="modal" data-target="#aboutModal" href="#">Help</a>
                                             </div>
                                         </li>
                                     </ul>
@@ -558,9 +586,15 @@
                 </div>
                 <!-- END DESKTOP VISIBLE BUTTONS -->
 
-            </div>
-        </nav>
 
-     
+
+
+
+
+
+
+
+            </div>
+        </nav>     
     </body>
 </html>
