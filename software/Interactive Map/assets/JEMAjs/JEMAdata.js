@@ -524,15 +524,11 @@ function get_hours(date) {
 function onEachFeature(feature, layer) {
     var date = new Date(0);
     date.setUTCSeconds(feature.properties.time);
-    var AM_PM = (date.getHours() >= 12) ? "PM" : "AM"
-    var hours = (get_hours(date)%12 == 0) ? get_hours(date) : get_hours(date)%12
-    var time = hours  + ":" + get_minutes(date) + AM_PM + "  " + (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear()
-    layer.bindPopup('<strong>client id:</strong> '+ feature.properties.clientID);
-
     var d = new Date();
 
     // if data is not 'old data', then allow it to be clicked for the data modal.
     if(d - date <= timeInterval) {
+        layer.bindPopup('<strong>client id:</strong> '+ feature.properties.clientID);
         // on click - set the popup modal values to the device clicked on
         layer.on('click', function (e) {
             map.panTo(this.getLatLng())
@@ -547,7 +543,16 @@ function onEachFeature(feature, layer) {
             $('.flex-time').text(time)
             $("#modChart").modal()
         });
+    } else {
+        // display 'OFFLINE' in popup if device if old data detected
+        layer.bindPopup('<strong>client id:</strong> '+ feature.properties.clientI + '<br><strong>OFFLINE</strong>');
     }
+
+    // format into 12 hour AM/PM time
+    var AM_PM = (date.getHours() >= 12) ? "PM" : "AM"
+    var hours = (get_hours(date)%12 == 0) ? get_hours(date) : get_hours(date)%12
+    var time = hours  + ":" + get_minutes(date) + AM_PM + "  " + (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear()
+
 
     // mouse over shows the client id - applicable to desktop version only
     layer.on('mouseover', function (e) {
