@@ -10,6 +10,10 @@ var hours;
 var old_data = false;
 var mapBounds = []
 
+// time interval device is reading at (400,000 is a bit more than 5 minutes)
+// this needs to be adjusted to show data is old, if the sensor read time interval is changed.
+var timeInterval = 400000
+
 
 //used for removing/adding data color scales when filter buttons are selected
 var click_ops = { 
@@ -57,11 +61,16 @@ function createIcon(bg_color, opacity, textAlign, text_margin_top, font_color, f
 
 
 
-
 // GET request to retreive latest data and populate markers
-fetch(/*Add GET request API URL here */, requestOptions)
+fetch("https://hogcaszzdb.execute-api.us-west-2.amazonaws.com/prod/mapdata", requestOptions)
     .then(response => response.json())
     .then(function(response) { 
+
+        for (var key in mapLayers) {
+            Object.keys(mapLayers).forEach(function(key) {
+                mapLayers[key].removeFrom(map);
+            }, mapLayers);
+        }
 
         mapLayers["nox"] = L.geoJSON(response, {
 
@@ -92,7 +101,7 @@ fetch(/*Add GET request API URL here */, requestOptions)
                 date.setUTCSeconds(feature.properties.time);
                 var opacity;
 
-                if(d - date > 400000){
+                if(d - date > timeInterval){
                     old_data = true;
                 }
 
@@ -143,7 +152,7 @@ fetch(/*Add GET request API URL here */, requestOptions)
                 }
 
 
-                if(d - date > 400000){
+                if(d - date > timeInterval){
                     old_data = true;
                 }
 
@@ -197,7 +206,7 @@ fetch(/*Add GET request API URL here */, requestOptions)
                 date.setUTCSeconds(feature.properties.time);
                 var opacity;
 
-                if(d - date > 400000){
+                if(d - date > timeInterval){
                     old_data = true;
                 }
 
@@ -242,7 +251,7 @@ fetch(/*Add GET request API URL here */, requestOptions)
                 date.setUTCSeconds(feature.properties.time);
                 var opacity;
 
-                if(d - date > 400000){
+                if(d - date > timeInterval){
                     old_data = true;
                 }
 
@@ -287,7 +296,7 @@ fetch(/*Add GET request API URL here */, requestOptions)
                 date.setUTCSeconds(feature.properties.time);
                 var opacity;
 
-                if(d - date > 400000){
+                if(d - date > timeInterval){
                     old_data = true;
                 }
 
@@ -330,7 +339,7 @@ fetch(/*Add GET request API URL here */, requestOptions)
                 date.setUTCSeconds(feature.properties.time);
                 var opacity;
 
-                if(d - date > 400000){
+                if(d - date > timeInterval){
                     old_data = true;
                 }
 
@@ -419,7 +428,7 @@ fetch(/*Add GET request API URL here */, requestOptions)
                 date.setUTCSeconds(feature.properties.time);
                 var opacity;
 
-                if(d - date > 400000){
+                if(d - date > timeInterval){
                     old_data = true;
                 }
 
@@ -441,8 +450,6 @@ fetch(/*Add GET request API URL here */, requestOptions)
     return addFirstLayer(mapLayers);
 
  })
-    
-
 
 
 function addFirstLayer(mapLayers){
@@ -507,35 +514,47 @@ function get_minutes(date) {
 
 //time function used in popups
 function get_hours(date) {
-    if(date.getHours() < 10){
-        hours = "0" + date.getHours();
-        return hours;
-    } else { 
         hours = date.getHours();
         return hours; 
-    }
 }
+
 
 
 //function to create popups for each marker and add hover/tap behaviors to them
 function onEachFeature(feature, layer) {
-    var date = new Date(0); // The 0 there is the key, which sets the date to the epoch
+    var date = new Date(0);
     date.setUTCSeconds(feature.properties.time);
-    var time = get_hours(date) + ":" + get_minutes(date) + "  " + date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-    // layer.on('click', function (e) {
-    // var formatted_date = date.getHours() + ":" + get_minutes(date) + ":" + get_seconds(date) + "  " + date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-    layer.on('click', function (e) {
-        map.panTo(this.getLatLng())
-        $('.flex-clientID').text(feature.properties.clientID)
-        $('.flex-temperature').text(feature.properties.temp + String.fromCharCode(176))
-        $('.flex-pressure').text(feature.properties.pressure + 'mb')
-        $('.flex-humidity').text(feature.properties.humidity + '%')
-        $('.flex-voc').text(feature.properties.voc)
-        $('.flex-particulate').text(feature.properties.particulate)
-        $('.flex-nox').text(feature.properties.nox + 'V')
-        $('.flex-vcc').text(feature.properties.vcc + 'V')
-        $('.flex-time').text(time)
-        $("#modChart").modal()
+    var AM_PM = (date.getHours() >= 12) ? "PM" : "AM"
+    var hours = (get_hours(date)%12 == 0) ? get_hours(date) : get_hours(date)%12
+    var time = hours  + ":" + get_minutes(date) + AM_PM + "  " + (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear()
+    layer.bindPopup('<strong>client id:</strong> '+ feature.properties.clientID);
+
+    var d = new Date();
+
+    // if data is not 'old data', then allow it to be clicked for the data modal.
+    if(d - date <= timeInterval) {
+        // on click - set the popup modal values to the device clicked on
+        layer.on('click', function (e) {
+            map.panTo(this.getLatLng())
+            $('.flex-clientID').text(feature.properties.clientID)
+            $('.flex-temperature').text(feature.properties.temp + String.fromCharCode(176))
+            $('.flex-pressure').text(feature.properties.pressure + 'mb')
+            $('.flex-humidity').text(feature.properties.humidity + '%')
+            $('.flex-voc').text(feature.properties.voc)
+            $('.flex-particulate').text(feature.properties.particulate)
+            $('.flex-nox').text(feature.properties.nox + 'V')
+            $('.flex-vcc').text(feature.properties.vcc + 'V')
+            $('.flex-time').text(time)
+            $("#modChart").modal()
+        });
+    }
+
+    // mouse over shows the client id - applicable to desktop version only
+    layer.on('mouseover', function (e) {
+        this.openPopup();
+    });
+    layer.on('mouseout', function (e) {
+        this.closePopup();
     });
 
 }
