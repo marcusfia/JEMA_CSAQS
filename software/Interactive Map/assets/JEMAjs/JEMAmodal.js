@@ -53,7 +53,7 @@
     var chart_title_selection;
     var clientID = $('.flex-clientID').text();
     for (var i = 0; i < query_terms.length; i++) {
-        var url = "https://bnujqsc1g1.execute-api.us-west-2.amazonaws.com/prod/clientID/" + clientID + "/" + query_terms[i] + "?t=" + past24
+        var url = "*** URL FOR QUERY REQUESTS HERE *** " + clientID + "/" + query_terms[i] + "?t=" + past24
 
         // Set dimensions of the canvas
         var margin = {top: 17, right: 10, bottom: 20, left: 35},
